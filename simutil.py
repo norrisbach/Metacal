@@ -1,3 +1,4 @@
+import ngmix
 import galsim
 import numpy as np
 
@@ -103,43 +104,39 @@ def add_noise(im0,psf_im0,scale,rng,noise,version=0,first=False):
     }
     return galdict, psfdict, backgrounds
 
-try:
-    import ngmix
-    def make_ngmix_data(galdict,psfdict,scale):
-        '''
-        Parameters
-        ----
-        galdict: dict
-            a dictionary with galaxy info
-        psfdict: dict
-            a dictionary with psf info
-        Returns
-        ----
-        ngmix.Observation
-        '''
+def make_ngmix_data(galdict,psfdict,scale):
+    '''
+    Parameters
+    ----
+    galdict: dict
+        a dictionary with galaxy info
+    psfdict: dict
+        a dictionary with psf info
+    Returns
+    ----
+    ngmix.Observation
+    '''
 
-        # psf Jacobian
-        psf_cen = (np.array(psfdict['im'].shape)-1.0)/2.0
-        psf_jacobian = ngmix.DiagonalJacobian(
-            row=psf_cen[0], col=psf_cen[1], scale=scale,
-        )
-        psf_obs = ngmix.Observation(
-            psfdict['im'],
-            weight=psfdict['wt'],
-            jacobian=psf_jacobian,
-        )
+    # psf Jacobian
+    psf_cen = (np.array(psfdict['im'].shape)-1.0)/2.0
+    psf_jacobian = ngmix.DiagonalJacobian(
+        row=psf_cen[0], col=psf_cen[1], scale=scale,
+    )
+    psf_obs = ngmix.Observation(
+        psfdict['im'],
+        weight=psfdict['wt'],
+        jacobian=psf_jacobian,
+    )
 
-        # gal Jacobian
-        cen = (np.array(galdict['im'].shape)-1.0)/2.0
-        jacobian = ngmix.DiagonalJacobian(
-            row=cen[0], col=cen[1], scale=scale,
-        )
-        obs = ngmix.Observation(
-            galdict['imArr'],
-            weight=galdict['wt'],
-            jacobian=jacobian,
-            psf=psf_obs,
-        )
-        return obs
-except (ImportError, KeyError) as error:
-    with_hst=False
+    # gal Jacobian
+    cen = (np.array(galdict['im'].shape)-1.0)/2.0
+    jacobian = ngmix.DiagonalJacobian(
+        row=cen[0], col=cen[1], scale=scale,
+    )
+    obs = ngmix.Observation(
+        galdict['imArr'],
+        weight=galdict['wt'],
+        jacobian=jacobian,
+        psf=psf_obs,
+    )
+    return obs
