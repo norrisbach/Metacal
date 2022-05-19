@@ -1,13 +1,13 @@
+#!/usr/bin/env python
 # see https://schwimmbad.readthedocs.io/en/latest/examples/
 # for reference
 # The following command uses 8 cores to process reference Id from 0 to 100
 # mpirun -np 8 ./example_parallel.py --minId 0 --maxId 100
-import os
-import gc
+
 import sys
 import ngmix
-import numpy as np
 import argparse
+import numpy as np
 from schwimmbad import MPIPool
 
 def metacal_init(rg):
@@ -37,9 +37,7 @@ def metacal_init(rg):
 
 def do_process(iref):
     rng = np.random.RandomState(iref)
-    boot=metacal_init(rng)
-
-
+    print(iref)
     del rng
     return
 
@@ -57,10 +55,10 @@ def main():
     if not pool.is_master():
         pool.wait()
         sys.exit(0)
+
     pool.map(do_process,refs)
     pool.close()
     return
 
 if __name__=='__main__':
     main()
-
